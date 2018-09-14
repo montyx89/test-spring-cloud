@@ -1,0 +1,17 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: guestbook-proxy
+zuul:
+  routes:
+    backend:
+      path: /guestbook/**
+      serviceId: guestbook-backend
+      strip-prefix: false
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${random.value}

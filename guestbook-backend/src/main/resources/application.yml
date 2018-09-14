@@ -1,0 +1,11 @@
+server:
+  port: ${server_port:8080}
+spring:
+  application:
+    name: guestbook-backend
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${random.value}
