@@ -12,6 +12,6 @@ zuul:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://guestbook-discovery:8761/eureka/
   instance:
     instance-id: ${random.value}

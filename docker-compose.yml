@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  guestbook-backend:
+    build: ./guestbook-backend
+  guestbook-discovery:
+    build: ./guestbook-discovery
+    ports:
+      - 8761:8761
+  guestbook-hystrix-dashboard:
+    build: ./guestbook-hystrix-dashboard
+    ports:
+      - 12000:12000
+  guestbook-mail:
+    build: ./guestbook-mail
+  guestbook-proxy:
+    build: ./guestbook-proxy
+    ports:
+      - 8000:8000
