@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name: guestbook-proxy
+  zipkin:
+    base-url: http://guestbook-zipkin:9411
+  sleuth:
+    sampler:
+      probability: 1
 zuul:
   routes:
     backend:
