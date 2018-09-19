@@ -2,6 +2,8 @@ package de.montyx.test.springcloud.guestbookbackend;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.command.AsyncResult;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,8 @@ import java.util.concurrent.Future;
 
 @Service
 public class GuestbookMailService {
+
+    private static final Log log = LogFactory.getLog(GuestbookMailService.class);
 
     @Autowired
     private GuestbookMailClient guestbookMailClient;
@@ -19,7 +23,7 @@ public class GuestbookMailService {
 
             @Override
             public Boolean invoke() {
-                System.out.println("Vor der Mail");
+                log.info("Vor der Mail");
                 try {
                   guestbookMailClient.mail();
                 } catch (Exception e) {

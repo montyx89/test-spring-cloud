@@ -1,18 +1,78 @@
 version: '3.7'
 services:
   guestbook-backend:
-    build: ./guestbook-backend
+    build:
+      context: ./guestbook-backend
+    depends_on: ["guestbook-discovery"]
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://docker.for.mac.localhost:12201"
+        tag: "guestbook-backend"
+
   guestbook-discovery:
-    build: ./guestbook-discovery
+    build:
+      context: ./guestbook-discovery
     ports:
       - 8761:8761
+    depends_on: ["guestbook-logstash"]
+
   guestbook-hystrix-dashboard:
-    build: ./guestbook-hystrix-dashboard
+    build:
+      context: ./guestbook-hystrix-dashboard
     ports:
       - 12000:12000
+    depends_on: ["guestbook-discovery"]
+
   guestbook-mail:
-    build: ./guestbook-mail
+    build:
+      context: ./guestbook-mail
+    depends_on: ["guestbook-discovery"]
+
   guestbook-proxy:
-    build: ./guestbook-proxy
+    build:
+      context: ./guestbook-proxy
     ports:
       - 8000:8000
+    depends_on: ["guestbook-discovery"]
+
+  guestbook-elasticsearch:
+    build:
+      context: ./guestbook-elk/elasticsearch
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./guestbook-elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./guestbook-elk/elasticsearch/data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+
+  guestbook-logstash:
+    build:
+      context: ./guestbook-elk/logstash
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./guestbook-elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./guestbook-elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+      - "12201:12201/udp"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    depends_on: ["guestbook-elasticsearch"]
+
+  guestbook-kibana:
+    build:
+      context: ./guestbook-elk/kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./guestbook-elk/kibana/config/:/usr/share/kibana/config:ro
+    ports:
+      - "5601:5601"
+    depends_on: ["guestbook-elasticsearch"]
